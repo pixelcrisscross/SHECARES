@@ -52,6 +52,23 @@ export const apiService = {
     return response.json();
   },
 
+  async chatWithText(message: string) {
+    const formData = new FormData();
+    formData.append('message', message);
+
+    const response = await fetch(`${API_BASE_URL}/chat/text`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'An API error occurred.');
+    }
+
+    return response.json();
+  },
+
   async predictPeriodAdvanced(data: AdvancedPeriodRequest) {
     const response = await fetch(`${API_BASE_URL}/predict-period/advanced`, {
       method: 'POST',
