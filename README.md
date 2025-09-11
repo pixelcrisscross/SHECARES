@@ -1,73 +1,63 @@
-SheCares - A Women's Safety & Support Application
-This repository contains the source code for the SheCares web application, a platform dedicated to enhancing the safety and well-being of women. Our mission is to provide a reliable tool for emergency situations and to build a supportive community.
+# 💖 SheCares – Your AI Health Companion
 
-✨ About The Project
-SheCares is a comprehensive safety application that leverages modern technology to provide women with a powerful tool for personal security. From instant emergency alerts to a network of community support, our goal is to create a safer environment. The application is designed to be intuitive, fast, and reliable when it matters most.
+SheCares is an AI-powered health and wellness platform that provides **intelligent health tracking** and **real-time AI assistance**. Designed to be a comprehensive companion, SheCares enables users to monitor their health, gain AI-driven insights, and access safety features interactively — all from the comfort of their browser.
 
-🔑 Key Features
-SOS Alerts: Instantly send distress signals with your live location to pre-selected emergency contacts and nearby authorities.
+---
 
-Live Location Tracking: Allow trusted contacts to track your location in real-time during a journey.
+## 🚀 Features
 
-Safe Zone Mapping: View and identify publicly verified safe zones like police stations, hospitals, and shelters on an interactive map using the Google Maps API.
+- 🤖 **AI-Powered Health Assistant** – Engage in empathetic conversations about your health via text or voice, and get instant nutritional analysis of food from a photo, all powered by Google Gemini.
+- 🩸 **Intelligent Cycle Prediction** – Utilizes a custom machine learning model to provide accurate, personalized predictions for menstrual cycles and ovulation windows.
+- 🆘 **Emergency SOS System** – A one-click safety feature that instantly retrieves the user's current geolocation, ready to be shared with emergency contacts.
+- 🤰 **Comprehensive Pregnancy Tools** – Includes a simple and effective due date calculator to track pregnancy milestones.
 
-Community Support Forum: A secure space for users to connect, share experiences, and offer support to one another.
+---
+## 🛆 Tech Stack
+ - **Frontend:** React, TypeScript, Vite, Tailwind CSS
+ - **Backend:** Python, FastAPI
+ - **AI / ML:** Google Gemini, Scikit-learn, gTTS, SpeechRecognition
+ - **Deployment:** Vercel
 
-Resource Directory: Quickly find contact information for women's helplines, support groups, and legal aid services.
+---
 
-AI-Powered Verification: Utilizes AI/ML models for enhanced security features.
+## 🛠️ Installation & Setup
 
-🛠️ Tech Stack & Tools
-This project is built with a modern and efficient tech stack to power the future.
+### Prerequisites
+- Node.js and npm
+- Python 3.9+ and pip
+- A `.env` file with your `GEMINI_API_KEY`
 
-Frontend: React, Vite, TypeScript, Tailwind CSS
+### 1. Clone the Repo
 
-Backend: Python, FastAPI, Flask, Firebase (Firestore, Auth, Functions)
+```bash
+git clone https://github.com/pixelcrisscross/SheCares-Oscorp-.git
+cd SheCares-Oscorp
+```
+### 2. Install Dependencies
+### 2a. Backend Setup (Python)
 
-API: Google Maps API, Gemini API
+```bash
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: .\venv\Scripts\activate
 
-AI/ML: TensorFlow, OpenCV, Scikit-learn, Torchvision, Pillow, Facenet-PyTorch
+# Install dependencies
+pip install -r requirements.txt
+```
 
-Database: Kaggle Database
+### 2b. Frontend Setup 
 
-🚀 Getting Started
-To get a local copy up and running, follow these simple steps.
-
-Prerequisites
-You need to have Node.js and npm installed on your machine. We recommend using nvm (Node Version Manager) to manage your Node.js versions.
-
-Installation
-# 1. Clone the repository
-git clone [https://github.com/pixelcrisscross/shecares.git](https://github.com/pixelcrisscross/SheCares-Oscorp-.git)
-
-# 2. Navigate to the project directory
-cd shecares
-
-# 3. Install NPM packages
+```bash
 npm install
+```
 
-# 4. Start the development server
+### 3. Configure Environment
+Create a .env.local file and add:
+```
+GEMINI_API_KEY="your_gemini_api_key_here"
+```
+
+### 4. Run 
+```bash
 npm run dev
-
-☁️ Deployment
-This application is hosted on Vercel. The platform is connected directly to our GitHub repository for seamless, automatic deployments whenever new changes are pushed to the main branch.
-
-🤝 Contributing
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
-
-Fork the Project
-
-Create your Feature Branch (git checkout -b feature/AmazingFeature)
-
-Commit your Changes (git commit -m 'Add some AmazingFeature')
-
-Push to the Branch (git push origin feature/AmazingFeature)
-
-Open a Pull Request
-
-Please make sure your code adheres to the project's coding standards.
-
-📜 License
-Distributed under the MIT License. See LICENSE.txt for more information.
-
-Project Link: https://github.com/pixelcrisscross/SheCares-Oscorp-.git
+```
