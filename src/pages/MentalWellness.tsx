@@ -227,7 +227,7 @@ const MentalWellness = () => {
 
       {/* Placeholder for Footer */}
       <footer className="py-4 text-center text-sm text-gray-500 border-t bg-white">
-        &copy; 2024 Wellness Inc. All rights reserved.
+        &copy; 2025 SheCares Inc. All rights reserved.
       </footer>
     </div>
   );
