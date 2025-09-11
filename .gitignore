@@ -1,0 +1,28 @@
+# Environment variables - DO NOT COMMIT!
+.env
+.env*.local
+
+# Dependencies and build output
+node_modules
+dist
+.vercel
+
+# Python specific
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Generated ML model files (not used by the web app)
+*.onnx
+*.tflite
+tf_model/
+
+# IDE and OS specific files
+.vscode/
+.idea/
+.DS_Store
+*.idx
+
+# Log files
+*.log
