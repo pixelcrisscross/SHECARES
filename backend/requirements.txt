@@ -10,3 +10,4 @@ SpeechRecognition
 gTTS
 python-dotenv
 python-multipart
+gunicorn
