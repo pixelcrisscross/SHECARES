@@ -78,19 +78,20 @@ const PregnancyCare = () => {
     setFoodAnalysis(null);
     const formData = new FormData();
     formData.append('file', foodImage);
-    try {
-      const response = await fetch('http://localhost:8000/analyse-food', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) throw new Error('Failed to analyze food image.');
-      const result: FoodAnalysisResult = await response.json();
-      setFoodAnalysis(result);
-    } catch (err: any) {
-      setFoodError(err.message);
-    } finally {
-      setFoodLoading(false);
-    }
+     try {
+    // You may need to add a method to apiService for food analysis
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/analyse-food`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Failed to analyze food image.');
+    const result: FoodAnalysisResult = await response.json();
+    setFoodAnalysis(result);
+  } catch (err: any) {
+    setFoodError(err.message);
+  } finally {
+    setFoodLoading(false);
+  }
   };
 
   return (

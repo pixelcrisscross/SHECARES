@@ -1,64 +1,65 @@
 import datetime
 import os
 import json
-import tempfile
 from io import BytesIO
 
-# Core FastAPI & Pydantic
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
-# Machine Learning & Data Handling
 import pandas as pd
 import joblib
-
-# Google Generative AI
 import google.generativeai as genai
 from PIL import Image
 
-# Speech Recognition & Synthesis
-import speech_recognition as sr
-from gtts import gTTS
-
 load_dotenv()
 
-# --- 1. App & Services Initialization ---
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not GEMINI_API_KEY:
+    print("❌ CRITICAL: GEMINI_API_KEY not set.")
+else:
+    print("✅ GEMINI_API_KEY loaded successfully.")
+
+# --- FastAPI App Initialization ---
 app = FastAPI(
     title="SheCares AI API",
     description="An integrated API for cycle prediction, pregnancy tools, and AI-powered health assistance.",
-    version="3.0.0"
+    version="3.1.0"
 )
 
-# --- CORS Middleware ---
+# --- CORS Configuration ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://she-cares-oscorp.vercel.app"],
+    allow_origins=[
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- Health AI Model Loading ---
+
+# --- Load Machine Learning Model ---
 try:
-    # Note: Ensure 'period_predictor_model.pkl' is in the same directory or provide the correct path.
     period_model_pipeline = joblib.load("period_predictor_model.pkl")
 except FileNotFoundError:
-    print("Warning: period_predictor_model.pkl not found. Advanced prediction endpoints will fail.")
+    print("⚠️ Warning: 'period_predictor_model.pkl' not found.")
     period_model_pipeline = None
 
 # --- Gemini AI Configuration ---
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
-    print("CRITICAL: GEMINI_API_KEY environment variable not set. Gemini endpoints will fail.")
+    print("❌ CRITICAL: GEMINI_API_KEY not set.")
     gemini_model = None
 else:
     genai.configure(api_key=api_key)
     gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
-# --- 2. Pydantic Request Models ---
+# --- Request Models ---
 class DueDateRequest(BaseModel):
     lmp_date: datetime.date = Field(..., example="2025-01-01")
 
@@ -76,20 +77,22 @@ class AdvancedPeriodRequest(BaseModel):
 class ChatbotRequest(BaseModel):
     user_input: str = Field(..., min_length=3)
 
-# --- 3. API Endpoints ---
+# --- Root Endpoint ---
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the SheCares AI API"}
 
+# --- Due Date Calculator ---
 @app.post("/calculate-due-date")
 def calculate_due_date(request: DueDateRequest):
     due_date = request.lmp_date + datetime.timedelta(days=280)
     return {"estimated_due_date": due_date.strftime("%Y-%m-%d")}
 
+# --- Period Prediction (Advanced) ---
 @app.post("/predict-ovulation/advanced")
 def predict_ovulation_advanced(request: AdvancedPeriodRequest):
     if period_model_pipeline is None:
-        raise HTTPException(status_code=503, detail="Machine Learning model is not available.")
+        raise HTTPException(status_code=503, detail="Machine Learning model unavailable.")
 
     df_data = {
         'Age': [request.age],
@@ -116,88 +119,53 @@ def predict_ovulation_advanced(request: AdvancedPeriodRequest):
         "fertile_window_end": ovulation_date.strftime("%Y-%m-%d")
     }
 
+# --- Simple Chatbot (Rule-Based) ---
 @app.post("/chatbot")
 def get_simple_chatbot_response(request: ChatbotRequest):
-    """Provides a simple, rule-based response for common questions."""
     responses = {
-        "pregnancy": "For a healthy pregnancy, focus on a balanced diet rich in iron and folate, stay hydrated, and engage in light exercise like walking. Always consult your doctor for personalized advice.",
-        "period": "To alleviate period cramps, you can try using a hot water bag, doing gentle yoga stretches, or some mild exercise. If pain is severe, please see a doctor.",
-        "mental": "For mental well-being, practicing mindfulness can be helpful. Take a few deep breaths, consider journaling your thoughts, or try a guided meditation for 5-10 minutes."
+        "pregnancy": "For a healthy pregnancy, eat a balanced diet, stay hydrated, and walk lightly. Consult your doctor for personalized care.",
+        "period": "To reduce cramps, try a hot water bag, gentle yoga, or rest. If pain persists, consult a gynecologist.",
+        "mental": "For mental well-being, take deep breaths, journal your thoughts, or meditate for 5–10 minutes daily."
     }
-    user_input_lower = request.user_input.lower()
-    for keyword, response in responses.items():
-        if keyword in user_input_lower:
-            return {"bot_response": response}
-    return {"bot_response": "I'm here to help! Please ask a question about pregnancy, periods, or mental health."}
+    text = request.user_input.lower()
+    for key, reply in responses.items():
+        if key in text:
+            return {"bot_response": reply}
+    return {"bot_response": "I'm here to help! Ask me about pregnancy, periods, or mental health."}
 
+# --- Food Analysis with Gemini ---
 @app.post("/analyse-food")
 async def analyse_food(file: UploadFile = File(...)):
     if not gemini_model:
-        raise HTTPException(status_code=503, detail="Gemini AI model is not configured.")
+        raise HTTPException(status_code=503, detail="Gemini AI not configured.")
     try:
         contents = await file.read()
+        print(f"Received file: {file.filename}, size: {len(contents)} bytes")
         image = Image.open(BytesIO(contents))
+        print("Image opened successfully.")
         prompt = (
-            "Analyse this food image in the context of women's health with respect pregnancy as a context!"
-            "Return a clean JSON object (no markdown) with fields: "
-            "'items' (list of strings), 'safe_to_eat' (boolean), "
-            "'confidence_score' (float 0-1), 'pros' (list of strings), 'cons' (list of strings)."
+            "Analyse this food image in the context of women's health during pregnancy. "
+            "Return JSON: {items:[], safe_to_eat:bool, confidence_score:float, pros:[], cons:[]}"
         )
         response = gemini_model.generate_content([prompt, image])
+        print("Gemini response:", response.text)
         clean_text = response.text.strip().replace("```json", "").replace("```", "")
         return json.loads(clean_text)
     except json.JSONDecodeError:
+        print("JSON decode error. Raw response:", response.text)
         return {"analysis_text": response.text}
     except Exception as e:
+        print("Error in /analyse-food:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
+# --- Text Chat with Gemini ---
 @app.post("/chat/text")
 async def chat_text(message: str = Form(...)):
     if not gemini_model:
-        raise HTTPException(status_code=503, detail="Gemini AI model is not configured.")
+        raise HTTPException(status_code=503, detail="Gemini AI not configured.")
     try:
-        contextual_message = f"You are a helpful, empathetic AI assistant for women's health. A user asks: '{message}'"
-        response = gemini_model.generate_content(contextual_message)
+        prompt = f"You are an empathetic AI assistant for women's health. User asks: '{message}'"
+        response = gemini_model.generate_content(prompt)
         return {"reply": response.text}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
-
-@app.post("/chat/voice")
-async def chat_voice(file: UploadFile = File(...), return_audio: bool = Form(False)):
-    if not gemini_model:
-        raise HTTPException(status_code=503, detail="Gemini AI model is not configured.")
-    
-    # Create a temporary file to store the uploaded audio
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio_in:
-        contents = await file.read()
-        temp_audio_in.write(contents)
-        audio_in_path = temp_audio_in.name
-    
-    try:
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(audio_in_path) as source:
-            audio_data = recognizer.record(source)
-            user_text = recognizer.recognize_google(audio_data)
-        
-        contextual_message = f"You are a helpful AI assistant for women's health. User asks: '{user_text}'"
-        gemini_response = gemini_model.generate_content(contextual_message).text
-        
-        if not return_audio:
-            return {"user_text": user_text, "reply": gemini_response}
-        
-        # If audio response is requested, generate TTS
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio_out:
-            tts = gTTS(text=gemini_response, lang='en')
-            tts.save(temp_audio_out.name)
-            return FileResponse(temp_audio_out.name, media_type="audio/mpeg", filename="response.mp3")
-            
-    except sr.UnknownValueError:
-        raise HTTPException(status_code=400, detail="Could not understand the audio.")
-    except sr.RequestError as e:
-        raise HTTPException(status_code=503, detail=f"Speech recognition service error: {e}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        # Clean up the temporary input audio file
-        if os.path.exists(audio_in_path):
-            os.remove(audio_in_path)
