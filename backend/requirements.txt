@@ -6,7 +6,7 @@ scikit-learn==1.7.1
 joblib
 google-generativeai
 Pillow
-SpeechRecognition
+# SpeechRecognition
 gTTS
 python-dotenv
 python-multipart

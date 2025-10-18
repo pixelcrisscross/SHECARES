@@ -243,23 +243,22 @@ export default function Index(): JSX.Element {
       link: "/dashboard",
       image: foodAnalyzer,
     },
-    {
-      icon: Watch,
-      title: "Wearable IoT",
-      description: "Monitor heart rate and detect emergencies in real-time",
-      link: "/dashboard",
-      image: wearableIot,
-    },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-pink-200 to-purple-200 text-foreground">
+    <div
+    className="min-h-screen bg-cover bg-center bg-fixed"
+    style={{
+    backgroundImage: "url('/src/assets/hero-background.jpg')", // Place your image in public/backgrounds/
+    backgroundColor: "#fff5f7", // fallback color
+  }}
+>
       {/* NAVBAR */}
       <header className="w-full z-30 backdrop-blur-md bg-white/50 fixed top-0 left-0">
         <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-lg">
-              SH
+              SC
             </div>
             <span className="font-semibold text-lg text-pink-600">SHECARES</span>
           </div>
@@ -334,7 +333,7 @@ export default function Index(): JSX.Element {
       {/* HERO */}
       <main className="pt-32">
         <section className="relative isolate flex items-center justify-center px-6">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-pink-200 via-pink-300 to-purple-300 opacity-90" />
+          {/* <div className="absolute inset-0 -z-10 bg-gradient-to-r from-pink-200 via-pink-300 to-purple-300 opacity-90" /> */}
           <div className="w-full max-w-4xl text-center py-24">
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative text-5xl sm:text-6xl md:text-7xl font-extrabold leading-tight">
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">Your Complete</span>

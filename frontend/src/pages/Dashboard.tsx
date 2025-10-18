@@ -390,26 +390,6 @@ const Dashboard = () => {
             </Card>
           </Link>
 
-          <Link to="/wearable-connect" className="group">
-            <Card className="h-full bg-white border-0 shadow-xl hover:shadow-2xl hover:shadow-green-200/60 transition-all duration-500 hover:scale-105 hover:-translate-y-2 transform cursor-pointer overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-teal-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <CardHeader className="relative z-10 pb-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">⌚</span>
-                </div>
-                <CardTitle className="flex items-center space-x-2 text-xl font-bold text-gray-800">
-                  <span>Wearable Connect</span>
-                </CardTitle>
-                <CardDescription className="text-gray-600 font-medium">Sync devices and track vitals</CardDescription>
-              </CardHeader>
-              <CardContent className="relative z-10">
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  Connect your smartwatch and fitness trackers for real-time health monitoring
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
           <Link to="/CareTaker" className="group">
             <Card className="h-full bg-white border-0 shadow-xl hover:shadow-2xl hover:shadow-amber-200/60 transition-all duration-500 hover:scale-105 hover:-translate-y-2 transform cursor-pointer overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-orange-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
